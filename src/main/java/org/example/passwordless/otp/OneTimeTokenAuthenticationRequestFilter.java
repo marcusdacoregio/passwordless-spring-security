@@ -64,7 +64,8 @@ public class OneTimeTokenAuthenticationRequestFilter extends OncePerRequestFilte
 
 		@Override
 		public void process(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain, OneTimeToken oneTimeToken) throws ServletException, IOException {
-			if (request.getQueryString().contains("magiclink")) {
+			String queryString = request.getQueryString();
+			if (queryString != null && queryString.contains("magiclink")) {
 				this.magicLink.process(request, response, filterChain, oneTimeToken);
 				return;
 			}

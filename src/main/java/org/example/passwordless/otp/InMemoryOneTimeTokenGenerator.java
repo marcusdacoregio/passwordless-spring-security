@@ -16,6 +16,7 @@
 
 package org.example.passwordless.otp;
 
+import java.security.SecureRandom;
 import java.time.Clock;
 import java.util.Map;
 import java.util.Random;
@@ -30,9 +31,11 @@ public class InMemoryOneTimeTokenGenerator implements OneTimeTokenGenerator {
 
 	private final Clock clock = Clock.systemUTC();
 
+	private final SecureRandom random = new SecureRandom();
+
 	@Override
 	public OneTimeToken generate(OneTimeTokenAuthenticationRequest request) {
-		String token = String.format("%06d", new Random().nextInt(1_000_000));
+		String token = String.format("%06d", this.random.nextInt(1_000_000));
 		System.out.println("Generated token: " + token);
 		lastToken = token;
 		DefaultOneTimeToken ott = new DefaultOneTimeToken(token, request.getUserIdentifier());

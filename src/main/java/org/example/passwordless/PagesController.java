@@ -22,24 +22,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 class PagesController {
 
-	@GetMapping("/otp/authenticate")
-	String otpAuthenticate() {
-		return "otp";
-	}
-
-	@GetMapping("/otp/confirm")
-	String otpConfirm() {
-		return "otp-confirm";
-	}
-
-	@GetMapping("/otp/sent")
-	String otpSent() {
-		return "otp-sent";
-	}
-
-	@GetMapping("/login")
-	String login() {
-		return "login";
+	@GetMapping("/ott/sent")
+	String ottSent() {
+		return "ott-sent";
 	}
 
 }

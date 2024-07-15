@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: passwordless
+  mail:
+    port: 1025
+    host: localhost
+  docker:
+    compose:
+      readiness:
+        wait: never # for some reason it does not detect whether maildev is ready
+
+logging.level.org.springframework.security: TRACE

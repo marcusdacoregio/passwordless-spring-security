@@ -32,7 +32,7 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
 	@Bean
-	public SecurityFilterChain securityFilterChain(HttpSecurity http, MailSender mailSender) throws Exception {
+	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		// @formatter:off
 		http
 				.authorizeHttpRequests((authz) -> authz
@@ -40,13 +40,9 @@ public class SecurityConfig {
 						.requestMatchers("/ott/sent").permitAll()
 						.anyRequest().authenticated())
 				.formLogin(Customizer.withDefaults())
-				.passwordlessLogin((passwordless) -> passwordless
-						.oneTimeToken((ott) -> ott
-								.authenticationRequestSuccessHandler(new MagicLinkOneTimeTokenSuccessHandler(mailSender)))
-				);
+				.oneTimeTokenLogin((ott) -> ott.authenticationRequestRedirectUrl("/ott/sent"));
 
 		// @formatter:on
-
 		return http.build();
 	}
 

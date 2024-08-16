@@ -26,6 +26,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.ott.RedirectOneTimeTokenAuthenticationRequestSuccessHandler;
 
 @Configuration(proxyBeanMethods = false)
 @EnableWebSecurity
@@ -40,7 +41,9 @@ public class SecurityConfig {
 						.requestMatchers("/ott/sent").permitAll()
 						.anyRequest().authenticated())
 				.formLogin(Customizer.withDefaults())
-				.oneTimeTokenLogin((ott) -> ott.authenticationRequestRedirectUrl("/ott/sent"));
+				.oneTimeTokenLogin((ott) -> ott
+						.authenticationRequestSuccessHandler(new RedirectOneTimeTokenAuthenticationRequestSuccessHandler("/ott/sent"))
+				);
 
 		// @formatter:on
 		return http.build();

@@ -28,7 +28,7 @@ public class MagicLinkOneTimeTokenSender implements OneTimeTokenSender {
 				.replaceQuery(null)
 				.fragment(null)
 				.path("/login/ott")
-				.queryParam("token", oneTimeToken.getToken());
+				.queryParam("token", oneTimeToken.getTokenValue());
 		String magicLink = builder.toUriString();
 		this.mailSender.send("johndoe@example.com", "Your Spring Security One Time Token", "Use the following link to sign in into the application: " + magicLink);
 	}

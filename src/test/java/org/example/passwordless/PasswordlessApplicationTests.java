@@ -33,7 +33,7 @@ class PasswordlessApplicationTests {
 
 	@Test
 	void ottAuthenticationRequestWhenUserExistsThenSendEmailAndAuthenticate() throws Exception {
-		this.mockMvc.perform(post("/ott/authenticate").param("username", "user").with(csrf()))
+		this.mockMvc.perform(post("/ott/generate").param("username", "user").with(csrf()))
 				.andExpectAll(
 						status().isFound(),
 						redirectedUrl("/ott/sent")

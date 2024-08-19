@@ -26,14 +26,13 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.ott.RedirectOneTimeTokenAuthenticationRequestSuccessHandler;
 
 @Configuration(proxyBeanMethods = false)
 @EnableWebSecurity
 public class SecurityConfig {
 
 	@Bean
-	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+	public SecurityFilterChain securityFilterChain(HttpSecurity http, MagicLinkGeneratedOneTimeTokenSuccessHandler magicLinkGeneratedOneTimeTokenSuccessHandler) throws Exception {
 		// @formatter:off
 		http
 				.authorizeHttpRequests((authz) -> authz
@@ -42,7 +41,7 @@ public class SecurityConfig {
 						.anyRequest().authenticated())
 				.formLogin(Customizer.withDefaults())
 				.oneTimeTokenLogin((ott) -> ott
-						.authenticationRequestSuccessHandler(new RedirectOneTimeTokenAuthenticationRequestSuccessHandler("/ott/sent"))
+						.generatedOneTimeTokenSuccessHandler(magicLinkGeneratedOneTimeTokenSuccessHandler)
 				);
 
 		// @formatter:on

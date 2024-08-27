@@ -16,23 +16,33 @@
 
 package org.example.passwordless;
 
+import java.io.IOException;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.ott.OneTimeToken;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.ott.GeneratedOneTimeTokenHandler;
 
 @Configuration(proxyBeanMethods = false)
 @EnableWebSecurity
 public class SecurityConfig {
 
 	@Bean
-	public SecurityFilterChain securityFilterChain(HttpSecurity http, MagicLinkGeneratedOneTimeTokenSuccessHandler magicLinkGeneratedOneTimeTokenSuccessHandler) throws Exception {
+	public SecurityFilterChain securityFilterChain(HttpSecurity http, MagicLinkGeneratedOneTimeTokenHandler magicLinkGeneratedOneTimeTokenHandler) throws Exception {
 		// @formatter:off
 		http
 				.authorizeHttpRequests((authz) -> authz
@@ -41,9 +51,9 @@ public class SecurityConfig {
 						.anyRequest().authenticated())
 				.formLogin(Customizer.withDefaults())
 				.oneTimeTokenLogin((ott) -> ott
-						.generatedOneTimeTokenSuccessHandler(magicLinkGeneratedOneTimeTokenSuccessHandler)
+						.generatedOneTimeTokenHandler(magicLinkGeneratedOneTimeTokenHandler)
 				);
-
+//				.oneTimeTokenLogin(Customizer.withDefaults());
 		// @formatter:on
 		return http.build();
 	}
@@ -56,6 +66,20 @@ public class SecurityConfig {
 				.roles("USER")
 				.build();
 		return new InMemoryUserDetailsManager(user);
+	}
+
+	public final class MyTest implements GeneratedOneTimeTokenHandler {
+
+		static final String SPRING_SECURITY_ONE_TIME_TOKEN = "SPRING_SECURITY_ONE_TIME_TOKEN";
+
+		@Override
+		public void handle(HttpServletRequest request, HttpServletResponse response, OneTimeToken oneTimeToken)
+				throws IOException, ServletException {
+			HttpSession session = request.getSession(false);
+			session.setAttribute(SPRING_SECURITY_ONE_TIME_TOKEN, oneTimeToken);
+			new DefaultRedirectStrategy().sendRedirect(request, response, "/ott/sent");
+		}
+
 	}
 
 }

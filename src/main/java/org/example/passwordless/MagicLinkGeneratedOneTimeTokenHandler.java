@@ -7,20 +7,21 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import org.springframework.security.authentication.ott.OneTimeToken;
-import org.springframework.security.web.authentication.ott.GeneratedOneTimeTokenSuccessHandler;
-import org.springframework.security.web.authentication.ott.RedirectGeneratedOneTimeTokenSuccessHandler;
+import org.springframework.security.web.DefaultRedirectStrategy;
+import org.springframework.security.web.RedirectStrategy;
+import org.springframework.security.web.authentication.ott.GeneratedOneTimeTokenHandler;
 import org.springframework.security.web.util.UrlUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @Component
-public class MagicLinkGeneratedOneTimeTokenSuccessHandler implements GeneratedOneTimeTokenSuccessHandler {
+public class MagicLinkGeneratedOneTimeTokenHandler implements GeneratedOneTimeTokenHandler {
 
 	private final MailSender mailSender;
 
-	private final GeneratedOneTimeTokenSuccessHandler redirectHandler = new RedirectGeneratedOneTimeTokenSuccessHandler("/ott/sent");
+	private final RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
 
-	public MagicLinkGeneratedOneTimeTokenSuccessHandler(MailSender mailSender) {
+	public MagicLinkGeneratedOneTimeTokenHandler(MailSender mailSender) {
 		this.mailSender = mailSender;
 	}
 
@@ -34,7 +35,7 @@ public class MagicLinkGeneratedOneTimeTokenSuccessHandler implements GeneratedOn
 				.queryParam("token", oneTimeToken.getTokenValue());
 		String magicLink = builder.toUriString();
 		this.mailSender.send("johndoe@example.com", "Your Spring Security One Time Token", "Use the following link to sign in into the application: " + magicLink);
-		this.redirectHandler.handle(request, response, oneTimeToken);
+		this.redirectStrategy.sendRedirect(request, response, "/ott/sent");
 	}
 
 }
